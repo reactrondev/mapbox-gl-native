@@ -2,6 +2,6 @@
     "base_test_path":"integration",
     "expectation_paths":["expected/"],
     "ignore_paths":["ignores.json", "mac-ignores.json"],
-    "vendor_path":"mapbox-gl-styles",
+    "vendor_path":"vendor",
     "asset_path": "integration"
 }

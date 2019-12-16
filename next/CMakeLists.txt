@@ -975,6 +975,52 @@ elseif(MBGL_WITH_QT)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Android)
     include(${PROJECT_SOURCE_DIR}/platform/android/android.cmake)
 elseif(CMAKE_SYSTEM_NAME STREQUAL iOS)
+add_custom_command(
+    TARGET mbgl-core PRE_LINK
+    COMMAND
+        ${CMAKE_COMMAND} -E
+        copy_directory
+        ${MBGL_ROOT}/mapbox-gl-js/test/integration/
+        ${MBGL_ROOT}/test-data/integration/
+    COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        copy_directory
+        ${MBGL_ROOT}/vendor/mapbox-gl-styles
+        ${MBGL_ROOT}/test-data/vendor/mapbox-gl-styles
+    COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        copy_directory
+        ${MBGL_ROOT}/render-test/ignores
+        ${MBGL_ROOT}/test-data/ignores
+    COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        copy_directory
+        ${MBGL_ROOT}/render-test/expected
+        ${MBGL_ROOT}/test-data/expected
+    COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        copy
+        ${MBGL_ROOT}/platform/node/test/ignores.json 
+        ${MBGL_ROOT}test-data/ignores.json 
+    COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        copy
+        ${MBGL_ROOT}/render-test/mac-ignores.json
+        ${MBGL_ROOT}/test-data/mac-ignores.json
+    COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        copy
+        ${MBGL_ROOT}/render-test/ios-manifest.json
+        ${MBGL_ROOT}/test-data/ios-manifest.json
+    WORKING_DIRECTORY ${MBGL_ROOT}
+)
+
     include(${PROJECT_SOURCE_DIR}/platform/ios/ios.cmake)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
     include(${PROJECT_SOURCE_DIR}/platform/linux/linux.cmake)

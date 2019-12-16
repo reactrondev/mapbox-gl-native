@@ -91,59 +91,11 @@ target_link_libraries(
         sqlite3
         z
 )
-
-# add_custom_command(
-#     TARGET RenderTestAPP PRE_BUILD
-#     COMMAND
-#         ${CMAKE_COMMAND} -E
-#         copy_directory
-#         ${MBGL_ROOT}/mapbox-gl-js/test/integration/
-#         ${MBGL_ROOT}/test-data/mapbox-gl-js/test/integration/
-#     COMMAND
-#         ${CMAKE_COMMAND}
-#         -E
-#         copy_directory
-#         ${MBGL_ROOT}/vendor/mapbox-gl-styles
-#         ${MBGL_ROOT}/test-data/vendor/mapbox-gl-styles
-#     COMMAND
-#         ${CMAKE_COMMAND}
-#         -E
-#         copy_directory
-#         ${MBGL_ROOT}/render-test/ignores
-#         ${MBGL_ROOT}/test-data/render-test/ignores
-#     COMMAND
-#         ${CMAKE_COMMAND}
-#         -E
-#         copy_directory
-#         ${MBGL_ROOT}/render-test/expected
-#         ${MBGL_ROOT}/test-data/render-test/expected
-#     COMMAND
-#         ${CMAKE_COMMAND}
-#         -E
-#         copy
-#         ${MBGL_ROOT}/platform/node/test/ignores.json 
-#         ${MBGL_ROOT}test-data/platform/node/test/ignores.json 
-#     COMMAND
-#         ${CMAKE_COMMAND}
-#         -E
-#         copy
-#         ${MBGL_ROOT}/render-test/mac-manifest.json
-#         ${MBGL_ROOT}/test-data/render-test/mac-manifest.json
-#     WORKING_DIRECTORY ${MBGL_ROOT}
-# )
-
 set(
     RESOURCES
     ${MBGL_ROOT}/render-test/ios/Main.storyboard
     ${MBGL_ROOT}/render-test/ios/LaunchScreen.storyboard
-    # ${MBGL_ROOT}/test-data
-    ${MBGL_ROOT}/mapbox-gl-js/test/integration
-    ${MBGL_ROOT}/vendor/mapbox-gl-styles
-    ${MBGL_ROOT}/render-test/ignores
-    ${MBGL_ROOT}/render-test/expected
-    ${MBGL_ROOT}/platform/node/test/ignores.json 
-    ${MBGL_ROOT}/render-test/mac-ignores.json
-    ${MBGL_ROOT}/render-test/ios-manifest.json
+    ${MBGL_ROOT}/test-data
 )
 
 add_executable(
