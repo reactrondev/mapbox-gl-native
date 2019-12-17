@@ -14,4 +14,4 @@ cp ../../platform/node/test/ignores.json ../../test-data/ignores.json
 cp ../../render-test/ios-manifest.json ../../test-data/ios-manifest.json
 cp ../../render-test/mac-ignores.json ../../test-data/mac-ignores.json
 
-cmake ../../next -B ../../xcodeBuild -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_SYSROOT=iphonesimulator
+cmake ../../next -B ../../iosBuild -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_SYSTEM_PROCESSOR=arm  -DCMAKE_OSX_SYSROOT=iphoneos
