@@ -9,13 +9,11 @@
   <key>CFBundleExecutable</key>
   <string>RenderTestAPP</string>
   <key>CFBundleIdentifier</key>
-  <string>com.mapbox.render</string>
+  <string>com.mapbox.test</string>
   <key>CFBundleGetInfoString</key>
   <string>${MACOSX_BUNDLE_INFO_STRING}</string>
   <key>CFBundleIconFile</key>
   <string>${MACOSX_BUNDLE_ICON_FILE}</string>
-  <key>CFBundleIdentifier</key>
-  <string>${MACOSX_BUNDLE_GUI_IDENTIFIER}</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>1.0</string>
   <key>CFBundleLongVersionString</key>
