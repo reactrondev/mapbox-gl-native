@@ -7,7 +7,7 @@ if(NOT DEFINED IOS_DEPLOYMENT_TARGET)
     set(IOS_DEPLOYMENT_TARGET "9.0")
 endif()
 
-set(CMAKE_OSX_ARCHITECTURES "armv7;arm64;i386;x86_64")
+set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 
 macro(initialize_ios_target target)
     set_target_properties(
@@ -194,12 +194,13 @@ find_package(XCTest REQUIRED)
 set(TEST_SOURCE ${MBGL_ROOT}/render-test/ios/tests/Tests.m)
 
 xctest_add_bundle(AppTest RenderTestAPP ${TEST_SOURCE})
-xctest_add_test(${TEST_BUNDLE_IDENTIFIER} ${TEST_NAME})
 
 target_include_directories(
     AppTest
     PUBLIC ${MBGL_ROOT}/render-test/ios
 )
+
+xctest_add_test(${TEST_BUNDLE_IDENTIFIER} ${TEST_NAME})
 
 set_target_properties(${TEST_NAME} PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${MBGL_ROOT}/render-test/ios/tests/tests.plist.in
@@ -207,10 +208,6 @@ set_target_properties(${TEST_NAME} PROPERTIES
     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${CODE_SIGN_IDENTITY}
     XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${DEVELOPMENT_TEAM_ID}
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY ${DEVICE_FAMILY}
-    XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "\$(inherited)"
-)
-
-set_target_properties(${TEST_NAME} PROPERTIES
     XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "\$(inherited)"
 )
 
@@ -239,8 +236,7 @@ target_link_libraries(
         "-framework OpenGLES"
         "-framework QuartzCore"
 )
-# Turn on ARC
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+
 
 # Create the app target
 set_target_properties(${APP_NAME} PROPERTIES
