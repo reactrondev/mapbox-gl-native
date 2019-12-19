@@ -105,19 +105,17 @@ target_link_libraries(
 )
 
 # <== Set to your project name, e.g. project.xcodeproj
-set(DEVELOPMENT_TEAM_ID "Mapbox, Inc")                       # <== Set to your team ID from Apple
-set(APP_NAME "RenderTestAPP")                                     # <== Set To your app's name
-set(APP_BUNDLE_IDENTIFIER "com.mapbox.render_test")                # <== Set to your app's bundle identifier
-set(FRAMEWORK_NAME "TestRunner")                                # <== Set to your framework's name
-set(FRAMEWORK_BUNDLE_IDENTIFIER "com.mapbox.framework")    # <== Set to your framework's bundle identifier (cannot be the same as app bundle identifier)
-set(TEST_NAME "AppTest")                                      # <== Set to your test's name
-set(TEST_BUNDLE_IDENTIFIER "com.mapbox.app_test")             # <== Set to your tests's bundle ID
-set(CODE_SIGN_IDENTITY "iPhone Developer")                  # <== Set to your preferred code sign identity, to see list:
-                                                            # /usr/bin/env xcrun security find-identity -v -p codesigning
-set(DEPLOYMENT_TARGET 8.0)                                  # <== Set your deployment target version of iOS
-set(DEVICE_FAMILY "1")                                      # <== Set to "1" to target iPhone, set to "2" to target iPad, set to "1,2" to target both
-set(LOGIC_ONLY_TESTS 0)                                     # <== Set to 1 if you do not want tests to be hosted by the application, speeds up pure logic tests but you can not run them on real devices
-
+set(DEVELOPMENT_TEAM_ID "Mapbox, Inc")                      
+set(APP_NAME "RenderTestAPP")                                    
+set(APP_BUNDLE_IDENTIFIER "com.mapbox.render_test")                
+set(FRAMEWORK_NAME "TestRunner")                                
+set(FRAMEWORK_BUNDLE_IDENTIFIER "com.mapbox.framework")   
+set(TEST_NAME "AppTest")                                    
+set(TEST_BUNDLE_IDENTIFIER "com.mapbox.app_test")         
+set(CODE_SIGN_IDENTITY "iPhone Developer")                                                                         
+set(DEPLOYMENT_TARGET 8.0)                                 
+set(DEVICE_FAMILY "1")                                      
+                               
 include(BundleUtilities)
 include(FindXCTest)
 
@@ -146,8 +144,6 @@ add_executable(
     ${MBGL_ROOT}/render-test/ios/ViewController.m
     ${MBGL_ROOT}/render-test/ios/iosTestRunner.h
     ${MBGL_ROOT}/render-test/ios/iosTestRunner.mm
-    # ${MBGL_ROOT}/render-test/ios/ios_test_runner.cpp
-    # ${MBGL_ROOT}/render-test/ios/ios_test_runner.hpp
     ${MBGL_ROOT}/render-test/ios/main.m
     ${RESOURCES}
 )
@@ -160,12 +156,6 @@ add_library(TestRunner SHARED
 )
 
 initialize_ios_target(TestRunner)
-# set_target_properties(TestRunner PROPERTIES
-#     FRAMEWORK TRUE
-#     MACOSX_FRAMEWORK_IDENTIFIER com.mapbox.test_runner
-#     MACOSX_FRAMEWORK_INFO_PLIST ${MBGL_ROOT}/render-test/ios/framework/Info.plist
-#     PUBLIC_HEADER "${MBGL_ROOT}/render-test/ios/ios_test_runner.hpp"
-# )
 
 set_target_properties(${FRAMEWORK_NAME} PROPERTIES
     FRAMEWORK TRUE
@@ -183,19 +173,6 @@ set_target_properties(${FRAMEWORK_NAME} PROPERTIES
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY ${DEVICE_FAMILY}
     XCODE_ATTRIBUTE_SKIP_INSTALL "YES"
 )
-
-# add_custom_command(
-#     TARGET ${FRAMEWORK_NAME}
-#     POST_BUILD
-#     COMMAND /bin/bash -c " ${MBGL_ROOT}/render-test/ios/framework/install_name.sh \${BUILT_PRODUCTS_DIR}/\${PRODUCT_NAME}.framework/\${PRODUCT_NAME}"
-# )
-
-# add_custom_command(
-#     TARGET ${FRAMEWORK_NAME}
-#     POST_BUILD
-#     COMMAND install_name_tool -id \"@rpath/\${PRODUCT_NAME}.framework/\${PRODUCT_NAME}\"
-#     \${BUILT_PRODUCTS_DIR}/\${PRODUCT_NAME}.framework/\${PRODUCT_NAME}
-# )
 
 target_include_directories(
     TestRunner
@@ -223,10 +200,6 @@ target_include_directories(
     AppTest
     PUBLIC ${MBGL_ROOT}/render-test/ios
 )
-
-# set_target_properties(AppTest PROPERTIES
-#                       XCODE_ATTRIBUTE_OTHER_LDFLAGS "${XCODE_ATTRIBUTE_OTHER_LDFLAGS} -framework ${FRAMEWORK_NAME}"
-# )
 
 set_target_properties(${TEST_NAME} PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${MBGL_ROOT}/render-test/ios/tests/tests.plist.in
@@ -287,9 +260,6 @@ set_target_properties(${APP_NAME} PROPERTIES
                       XCODE_ATTRIBUTE_GCC_SYMBOLS_PRIVATE_EXTERN YES
 )
 
-# Include framework headers, needed to make "Build" Xcode action work.
-# "Archive" works fine just relying on default search paths as it has different
-# build product output directory.
 target_include_directories(${APP_NAME} PUBLIC 
     "${PROJECT_BINARY_DIR}/\${CONFIGURATION}\${EFFECTIVE_PLATFORM_NAME}/${FRAMEWORK_NAME}.framework"
 )
@@ -301,13 +271,6 @@ set_target_properties(
     XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS
     "@executable_path/Frameworks"
 )
-
-# Note that commands below are indented just for readability. They will endup as
-# one liners after processing and unescaped ; will disappear so \; are needed.
-# First condition in each command is for normal build, second for archive.
-# \&\>/dev/null makes sure that failure of one command and success of other
-# is not printed and does not make Xcode complain that /bin/sh failed and build
-# continued.
 
 # Create Frameworks directory in app bundle
 add_custom_command(
@@ -354,52 +317,6 @@ add_custom_command(
         exit 1 \;
     fi\"
 )
-
-# Codesign the framework in it's new spot
-# add_custom_command(
-#     TARGET
-#     ${APP_NAME}
-#     POST_BUILD COMMAND /bin/sh -c
-#     \"COMMAND_DONE=0 \;
-#     if codesign --force --verbose
-#         ${PROJECT_BINARY_DIR}/\${CONFIGURATION}\${EFFECTIVE_PLATFORM_NAME}/${APP_NAME}.app/Frameworks/${FRAMEWORK_NAME}.framework
-#         --sign ${CODE_SIGN_IDENTITY}
-#         \&\>/dev/null \; then
-#         COMMAND_DONE=1 \;
-#     fi \;
-#     if codesign --force --verbose
-#         \${BUILT_PRODUCTS_DIR}/${APP_NAME}.app/Frameworks/${FRAMEWORK_NAME}.framework
-#         --sign ${CODE_SIGN_IDENTITY}
-#         \&\>/dev/null \; then
-#         COMMAND_DONE=1 \;
-#     fi \;
-#     if [ \\$$COMMAND_DONE -eq 0 ] \; then
-#         echo Framework codesign failed \;
-#         exit 1 \;
-#     fi\"
-# )
-
-# Add a "PlugIns" folder as a kludge fix for how the XcTest package generates paths 
-# add_custom_command(
-#     TARGET
-#     ${APP_NAME}
-#     POST_BUILD COMMAND /bin/sh -c
-#     \"COMMAND_DONE=0 \;
-#     if ${CMAKE_COMMAND} -E make_directory
-#         ${PROJECT_BINARY_DIR}/\${CONFIGURATION}\${EFFECTIVE_PLATFORM_NAME}/PlugIns
-#         \&\>/dev/null \; then
-#         COMMAND_DONE=1 \;
-#     fi \;
-#     if [ \\$$COMMAND_DONE -eq 0 ] \; then
-#         echo Failed to create PlugIns directory in EFFECTIVE_PLATFORM_NAME folder. \;
-#         exit 1 \;
-#     fi\"
-# ) dxveērt iobv7ie34 53-w9e5
-
-
-
-
-
 
 
 unset(IOS_DEPLOYMENT_TARGET CACHE)
