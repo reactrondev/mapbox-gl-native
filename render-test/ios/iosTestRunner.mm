@@ -1,6 +1,6 @@
 #import "iosTestRunner.h"
 
-#include <TestRunner/ios_test_runner.hpp>
+#include "ios_test_runner.hpp"
 
 #include <string>
 
