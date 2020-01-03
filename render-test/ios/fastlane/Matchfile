@@ -1,0 +1,13 @@
+git_url("git@github.com:zmiao/testApp.git")
+
+storage_mode("git")
+
+type("development") # The default type, can be: appstore, adhoc, enterprise or development
+
+app_identifier(["com.mapbox.RenderTestApp"])
+username("applemachine@mapbox.com") # Your Apple Developer Portal username
+keychain_name("fastlane_keychain")
+# For all available options run `fastlane match --help`
+# Remove the # in the beginning of the line to enable the other options
+
+# The docs are available on https://docs.fastlane.tools/actions/match

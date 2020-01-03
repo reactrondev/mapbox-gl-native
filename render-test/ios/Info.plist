@@ -7,9 +7,9 @@
   <key>CFBundleDisplayName</key>
   <string>${PRODUCT_NAME}</string>
   <key>CFBundleExecutable</key>
-  <string>RenderTestAPP</string>
+  <string>RenderTestApp</string>
   <key>CFBundleIdentifier</key>
-  <string>com.mapbox.test</string>
+  <string>com.mapbox.RenderTestApp</string>
   <key>CFBundleGetInfoString</key>
   <string>${MACOSX_BUNDLE_INFO_STRING}</string>
   <key>CFBundleIconFile</key>

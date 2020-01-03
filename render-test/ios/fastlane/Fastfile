@@ -1,0 +1,108 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+platform :ios do
+  before_all do
+    begin
+        xcversion(version: "~> 11.0")
+    rescue => ex
+        UI.error("Failed when switching to Xcode version: #{ex}")
+    end
+  end
+  desc "Description of what the lane does"
+  lane :ios_build do
+    # automatic_code_signing(use_automatic_signing: false) 
+    # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28") 
+    sync_code_signing(type: "development", readonly: false)
+    update_project_provisioning(
+      xcodeproj: "./Mapbox\ GL\ Native.xcodeproj",
+      profile: "./Development_com.mapbox.RenderTestApp.mobileprovision", # optional if you use sigh
+      # target_filter: ".*WatchKit Extension.*", # matches name or type of a target
+      build_configuration: "Debug"
+      # code_signing_identity: "iPhone Development" # optionally specify the codesigning identity
+    )
+    build_ios_app(
+      configuration: "Debug",
+      scheme: "RenderTestApp",
+      silent: false,
+      clean: true,
+      output_directory: "build/",
+      output_name: "testRunner.ipa"
+    )
+  end
+
+  desc "Description of what the lane does"
+  lane :gym_build do
+    # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28")
+    create_keychain(name: "fastlane_keychain", password: "test123", default_keychain: true, unlock: true,timeout: 3600,lock_when_sleeps: true)
+    match(type: "development", keychain_name: "fastlane_keychain", readonly: false)
+    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k test123 fastlane_keychain"
+    gym(
+      scheme: "RenderTestApp",
+      configuration: "Debug",
+      clean: false,
+      silent: false,
+      output_directory: "."
+      )
+  end
+
+  desc "Description of what the lane does"
+  lane :xcode_build do
+    # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28")
+    # create_keychain(name: "fastlane_keychain", password:$FASTLANE_PASSWORD, unlock: true,timeout: false)
+    match(type: "development", keychain_name: "fastlane_keychain", readonly: false)
+    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k test123 fastlane_keychain"
+    xcodebuild(
+      # archive: true,
+      scheme: "RenderTestApp",
+      project: "Build/Mapbox\ GL\ Native.xcodeproj",
+      configuration: "Debug",
+      sdk: "iphoneos"
+      # derivedDataPath: "./"
+      # workspace: "project.xcworkspace"
+  )
+  end
+
+  desc "Description of what the lane does"
+  lane :ci_build do
+    # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28")
+    create_keychain(name: "fastlane_keychain", password:$FASTLANE_PASSWORD, unlock: true,timeout: false)
+    match(type: "development", keychain_name: "fastlane_keychain", readonly: false)
+    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $FASTLANE_PASSWORD fastlane_keychain"
+    xcodebuild(
+      # archive: true,
+      scheme: "RenderTestApp",
+      project: "Build/Mapbox\ GL\ Native.xcodeproj",
+      configuration: "Debug",
+      sdk: "iphoneos"
+      # derivedDataPath: "./"
+      # workspace: "project.xcworkspace"
+  )
+  end
+
+  private_lane :create_alpha_build do
+    # automatic_code_signing(use_automatic_signing: false)
+    # sync_code_signing(type: "development", readonly: false)
+    build_app(
+      scheme: "RenderTestApp",
+      configuration: "Debug", 
+      silent: false,
+      clean: true,
+      export_method: "development",
+      output_directory: "build/",
+      output_name: "testRunner.ipa"
+    )
+  end
+end

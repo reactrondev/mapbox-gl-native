@@ -1,0 +1,5 @@
+app_identifier("com.mapbox.RenderTestApp") # The bundle identifier of your app
+apple_id ("applemachine@mapbox.com")
+
+#itc_team_id("34158803") # iTunes Connect Team ID
+team_id("GJZR2MEM28") # Developer Portal Team ID

@@ -12,7 +12,7 @@ EXPORT
 void TestRunner::startTest(const std::string& manifest) {
 
     auto runTestWithManifest = [](const std::string& manifest) -> bool {
-            std::vector<std::string> arguments = {"mbgl-render-test-runner", "-p", manifest};
+            std::vector<std::string> arguments = {"mbgl-render-test-runner", "-p", manifest, "-f", "debug"};
             std::vector<char*> argv;
             for (const auto& arg : arguments) {
                 argv.push_back(const_cast<char*>(arg.data()));
