@@ -97,8 +97,6 @@ target_link_libraries(
 enable_testing()
 set(RESOURCES ${MBGL_ROOT}/render-test/ios/Main.storyboard ${MBGL_ROOT}/render-test/ios/LaunchScreen.storyboard ${MBGL_ROOT}/test-data)
 
-set(PUBLIC_HEADER ${MBGL_ROOT}/render-test/ios/iosTestRunner.h)
-
 add_executable(
     RenderTestApp
     ${MBGL_ROOT}/render-test/ios/ios_test_runner.hpp
@@ -115,31 +113,27 @@ add_executable(
 
 initialize_ios_target(RenderTestApp)
 
-set(DEPLOYMENT_TARGET 8.0)
 set(MACOSX_BUNDLE_INFO_STRING "com.mapbox.RenderTestApp")
 set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.mapbox.RenderTestApp")
 set(MACOSX_BUNDLE_BUNDLE_NAME "com.mapbox.RenderTestApp")
-set(MACOSX_BUNDLE_ICON_FILE "")
-set(MACOSX_BUNDLE_LONG_VERSION_STRING "1.0")
-set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "1.0")
-set(MACOSX_BUNDLE_COPYRIGHT "Copyright YOU")  
 set(MACOSX_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET})
-
-# Turn on ARC
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
 
 set_target_properties(
     RenderTestApp
     PROPERTIES
         MACOSX_BUNDLE
         TRUE
-        CODE_SIGN_IDENTITY ""
-        CODE_SIGNING_ALLOWED "NO"
-        CODE_SIGN_ENTITLEMENTS ""
+        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
+        ""
+        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        "NO"
+        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
+        ""
         MACOSX_BUNDLE_IDENTIFIER
-        CODE_SIGNING_ALLOWED "NO"
         com.mapbox.RenderTestApp
+        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        "NO"
         MACOSX_BUNDLE_INFO_PLIST
         ${MBGL_ROOT}/render-test/ios/Info.plist
         RESOURCE
@@ -191,38 +185,23 @@ target_include_directories(
 
 xctest_add_test(XCTest.RenderTestApp TestAPPTests)
 
-# macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
-#     set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
-# endmacro (set_xcode_property)
-
-# macro (unset_xcode_property TARGET XCODE_PROPERTY)
-#   set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY})
-# endmacro (unset_xcode_property)
-
-# set_xcode_property(TestAPPTests LD_RUNPATH_SEARCH_PATHS "$(inherited) @executable_path/Frameworks @loader_path/Frameworks")
-# set_xcode_property(TestAPPTests ONLY_ACTIVE_ARCH "YES")
-# set_xcode_property(TestAPPTests PRODUCT_BUNDLE_IDENTIFIER "com.mapbox.TestAPPTests")
-# unset_xcode_property(TestAPPTests TEST_HOST)
-# unset_xcode_property(TestAPPTests BUNDLE_LOADER)
-# set_xcode_property(TestAPPTests USES_XCTRUNNER "YES")
-# set_xcode_property(TestAPPTests TEST_TARGET_NAME "RenderTestApp")
-# set_target_properties(TestAPPTests PROPERTIES XCODE_PRODUCT_TYPE "com.apple.product-type.bundle.ui-testing")
-
 set_target_properties(
     TestAPPTests
     PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
         ${MBGL_ROOT}/render-test/ios/tests/tests.plist.in
-        XCODE_ATTRIBUTE_USES_XCTRUNNER "YES"
-        XCODE_ATTRIBUTE_TEST_TARGET_NAME "RenderTestApp"
-
+        XCODE_ATTRIBUTE_USES_XCTRUNNER
+        "YES"
+        XCODE_ATTRIBUTE_TEST_TARGET_NAME
+        "RenderTestApp"
+        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
+        ""
+        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        "NO"
+        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
+        ""
 )
-set_property (TARGET TestAPPTests PROPERTY XCODE_ATTRIBUTE_TEST_HOST)
-set_property (TARGET TestAPPTests PROPERTY XCODE_ATTRIBUTE_BUNDLE_LOADER)
-macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
-    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
-endmacro (set_xcode_property)
-# set_xcode_property(TestAPPTests CODE_SIGN_IDENTITY ${CODESIGNIDENTITY})
-#set_xcode_property(RenderTestApp DEVELOPMENT_TEAM "GJZR2MEM28")
-# set_xcode_property(TestAPPTests PROVISIONING_PROFILE_SPECIFIER ${PROVISIONING_PROFILE_NAME})
+set_property(TARGET TestAPPTests PROPERTY XCODE_ATTRIBUTE_TEST_HOST)
+set_property(TARGET TestAPPTests PROPERTY XCODE_ATTRIBUTE_BUNDLE_LOADER)
+
 unset(IOS_DEPLOYMENT_TARGET CACHE)

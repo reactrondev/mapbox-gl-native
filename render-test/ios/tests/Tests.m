@@ -17,7 +17,7 @@
 }
 
 - (void)testExample {
-     IosTestRunner* runner = [[IosTestRunner alloc] init];
-     XCTAssert(runner);
+    //  IosTestRunner* runner = [[IosTestRunner alloc] init];
+    //  XCTAssert(runner);
 }
 @end

@@ -46,7 +46,7 @@ platform :ios do
   desc "Description of what the lane does"
   lane :gym_build do
     # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28")
-    create_keychain(name: "fastlane_keychain", password: "test123", default_keychain: true, unlock: true,timeout: 3600,lock_when_sleeps: true)
+    # create_keychain(name: "fastlane_keychain", password: "test123", default_keychain: true, unlock: true,timeout: 3600,lock_when_sleeps: true)
     match(type: "development", keychain_name: "fastlane_keychain", readonly: false)
     sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k test123 fastlane_keychain"
     gym(
@@ -61,7 +61,7 @@ platform :ios do
   desc "Description of what the lane does"
   lane :xcode_build do
     # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28")
-    # create_keychain(name: "fastlane_keychain", password:$FASTLANE_PASSWORD, unlock: true,timeout: false)
+    create_keychain(name: "fastlane_keychain", password:"test123", unlock: true,timeout: false)
     match(type: "development", keychain_name: "fastlane_keychain", readonly: false)
     sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k test123 fastlane_keychain"
     xcodebuild(
@@ -69,7 +69,8 @@ platform :ios do
       scheme: "RenderTestApp",
       project: "Build/Mapbox\ GL\ Native.xcodeproj",
       configuration: "Debug",
-      sdk: "iphoneos"
+      sdk: "iphoneos",
+      silent: false
       # derivedDataPath: "./"
       # workspace: "project.xcworkspace"
   )

@@ -665,7 +665,7 @@ jobs:
             bundle exec fastlane run create_keychain name:fastlane_keychain password:$FASTLANE_PASSWORD timeout:false unlock:true
             bundle exec fastlane match
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $FASTLANE_PASSWORD fastlane_keychain
-            ./setup_test_data.sh
+            ./setup_test_data.sh && cd Build
             xcodebuild -sdk iphoneos  -project Mapbox\ GL\ Native.xcodeproj -scheme RenderTestApp -arch arm64
       # - login-google-cloud-platform
       # - run:
