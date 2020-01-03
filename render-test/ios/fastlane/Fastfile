@@ -61,9 +61,9 @@ platform :ios do
   desc "Description of what the lane does"
   lane :xcode_build do
     # disable_automatic_code_signing(path: "./Mapbox\ GL\ Native.xcodeproj", team_id: "GJZR2MEM28")
-    create_keychain(name: "fastlane_keychain", password:"test123", unlock: true,timeout: false)
-    match(type: "development", keychain_name: "fastlane_keychain", readonly: false)
-    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k test123 fastlane_keychain"
+    create_keychain(name: "render_test_app_keychain", password:"test123", unlock: true,timeout: false)
+    match(type: "development", keychain_name: "render_test_app_keychain", readonly: false)
+    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k test123 render_test_app_keychain"
     xcodebuild(
       # archive: true,
       scheme: "RenderTestApp",

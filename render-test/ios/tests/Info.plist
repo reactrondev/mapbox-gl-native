@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>TestAPPTests</string>
+	<string>RenderTestAppTests</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.mapbox.TestAPPTests</string>
+	<string>com.mapbox.RenderTestAppTests</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>CFBundleName</key>

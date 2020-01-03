@@ -124,18 +124,19 @@ set_target_properties(
     PROPERTIES
         MACOSX_BUNDLE
         TRUE
-        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
-        ""
-        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-        "NO"
-        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
-        ""
+        # XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
+        # ""
+        # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        # "NO"
+        # XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
+        # ""
         MACOSX_BUNDLE_IDENTIFIER
         com.mapbox.RenderTestApp
-        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-        "NO"
+        # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        # "NO"
         MACOSX_BUNDLE_INFO_PLIST
         ${MBGL_ROOT}/render-test/ios/Info.plist
+        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
         RESOURCE
         "${RESOURCES}"
 )
@@ -174,34 +175,35 @@ target_link_libraries(
 
 find_package(XCTest REQUIRED)
 
-xctest_add_bundle(TestAPPTests RenderTestApp ${MBGL_ROOT}/render-test/ios/tests/Tests.m)
+xctest_add_bundle(RenderTestAppTests RenderTestApp ${MBGL_ROOT}/render-test/ios/tests/Tests.m)
 
-initialize_ios_target(TestAPPTests)
+initialize_ios_target(RenderTestAppTests)
 
 target_include_directories(
-    TestAPPTests
+    RenderTestAppTests
     PUBLIC ${MBGL_ROOT}/render-test/ios
 )
 
-xctest_add_test(XCTest.RenderTestApp TestAPPTests)
+xctest_add_test(XCTest.RenderTestApp RenderTestAppTests)
 
 set_target_properties(
-    TestAPPTests
+    RenderTestAppTests
     PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
-        ${MBGL_ROOT}/render-test/ios/tests/tests.plist.in
+        ${MBGL_ROOT}/render-test/ios/tests/Info.plist
         XCODE_ATTRIBUTE_USES_XCTRUNNER
         "YES"
         XCODE_ATTRIBUTE_TEST_TARGET_NAME
         "RenderTestApp"
-        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
-        ""
-        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-        "NO"
-        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
-        ""
+        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
+        # XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
+        # ""
+        # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        # "NO"
+        # XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
+        # ""
 )
-set_property(TARGET TestAPPTests PROPERTY XCODE_ATTRIBUTE_TEST_HOST)
-set_property(TARGET TestAPPTests PROPERTY XCODE_ATTRIBUTE_BUNDLE_LOADER)
+set_property(TARGET RenderTestAppTests PROPERTY XCODE_ATTRIBUTE_TEST_HOST)
+set_property(TARGET RenderTestAppTests PROPERTY XCODE_ATTRIBUTE_BUNDLE_LOADER)
 
 unset(IOS_DEPLOYMENT_TARGET CACHE)

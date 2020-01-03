@@ -664,10 +664,13 @@ jobs:
           command: |
             cd render-test/ios
             ./setup_test_data.sh
+            fastlane run create_keychain name:fastlane_keychain password:$FASTLANE_PASSWORD timeout:false unlock:true
+            fastlane match
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $FASTLANE_PASSWORD fastlane_keychain
             cmake ../../next -B Build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
             cd Build
             xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj -scheme RenderTestApp build-for-testing -arch arm64
-            xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj build -target TestAPPTests -arch arm64
+            xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj build -target RenderTestAppTests -arch arm64
       # - login-google-cloud-platform
       # - run:
       #     name: Run RenderTestRunner Instrumentation Test on Firebase
