@@ -677,6 +677,41 @@ jobs:
             cd Build
             xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj -scheme RenderTestApp build-for-testing -arch arm64
             xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj build -target RenderTestAppTests -arch arm64
+      - run:
+          name: Codesign Apps for running on a physical device
+          command: |
+            cd render-test/ios
+            ./codesigning/generate-entitlements.swift
+            ls codesigning
+            cd Build && ls Mapbox\ GL\ Native.build/Debug-iphoneos/
+            # cp Mapbox\ GL\ Native.build/Debug-iphoneos/RenderTestApp.build/RenderTestApp.app.xcent ../codesigning/
+            ../codesigning/codesign_all.sh
+            codesign -dv --verbose=4 Debug-iphoneos/RenderTestApp.app # for debugging
+      # - run:
+      #   name: Log in to IOS Google Cloud Platform
+      #   command: |
+      #       brew cask install google-cloud-sdk
+      #       if [[ -n "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}"]]; then
+      #         echo "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" > ios_secret.json
+      #         gcloud auth activate-service-account --key-file ios_secret.json --project ios-mapbox-gl-native
+      #         rm ios_secret.json
+      #       fi
+      #  - run:
+      #     name: Run instrumentation tests on Firebase
+      #     no_output_timeout: 20m
+      #     command: |
+      #       if [[ -n "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" ]]; then
+      #         # arrange files in a way Firebase expects it, and package them in a zip file
+      #         cd render-test/ios/Build
+      #         # Prepare a zip file for Firebase we are standing in the build directory
+      #         zip ../testapp.zip -r Debug-iphoneos
+      #         zip ../testapp.zip RenderTestApp_iphoneos13.2-arm64e.xctestrun
+      #         cd ..
+      #         gcloud firebase test ios run \
+      #           --test testapp.zip \
+      #           --device model=iphonexs,version=12.1,locale=en,orientation=portrait --xcode-version=11.1 --timeout 20m \
+      #           --verbosity=debug
+      #       fi
       # - login-google-cloud-platform
       # - run:
       #     name: Run RenderTestRunner Instrumentation Test on Firebase
