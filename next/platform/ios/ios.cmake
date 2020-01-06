@@ -173,6 +173,14 @@ target_link_libraries(
         mbgl-render-test
 )
 
+macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
+    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
+endmacro (set_xcode_property)
+
+SET_XCODE_PROPERTY(RenderTestApp CODE_SIGN_IDENTITY $ENV{CODESIGNIDENTITY})
+SET_XCODE_PROPERTY(RenderTestApp DEVELOPMENT_TEAM $ENV{IOS_DEVELOPMENT_TEAM})
+SET_XCODE_PROPERTY(RenderTestApp PROVISIONING_PROFILE_SPECIFIER $ENV{PROVISIONING_PROFILE_NAME})
+
 find_package(XCTest REQUIRED)
 
 xctest_add_bundle(RenderTestAppTests RenderTestApp ${MBGL_ROOT}/render-test/ios/tests/Tests.m)
