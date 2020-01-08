@@ -656,6 +656,7 @@ commands:
 
 jobs:
   next-ios-render-test-runner:
+    executor: macos-11_0_0
     steps:
       - checkout
       - next-prepare

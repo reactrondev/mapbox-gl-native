@@ -65,7 +65,7 @@
             }
         }
         if (path) {
-            NSString *manifestPath = [path stringByAppendingPathComponent:@"/ios-manifest.json"];
+            NSString *manifestPath = [path stringByAppendingPathComponent:@"/next-ios-render-test-runner-style.json"];
             
             std::string manifest = std::string([manifestPath UTF8String]);
             
