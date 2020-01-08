@@ -95,6 +95,8 @@ target_link_libraries(
 )
 
 enable_testing()
+find_package(XCTest REQUIRED)
+
 set(RESOURCES ${MBGL_ROOT}/render-test/ios/Main.storyboard ${MBGL_ROOT}/render-test/ios/LaunchScreen.storyboard ${MBGL_ROOT}/test-data)
 
 add_executable(
@@ -124,17 +126,15 @@ set_target_properties(
     PROPERTIES
         MACOSX_BUNDLE
         TRUE
-        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
-        ""
-        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-        "NO"
-        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
-        ""
-        MACOSX_BUNDLE_IDENTIFIER
-        com.mapbox.RenderTestApp
+        # XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
+        # ""
+        # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+        # "NO"
+        # XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
+        # ""
         MACOSX_BUNDLE_INFO_PLIST
         ${MBGL_ROOT}/render-test/ios/Info.plist
-        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
+        # XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
         RESOURCE
         "${RESOURCES}"
 )
@@ -171,16 +171,6 @@ target_link_libraries(
         mbgl-render-test
 )
 
-macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
-    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
-endmacro (set_xcode_property)
-
-SET_XCODE_PROPERTY(RenderTestApp CODE_SIGN_IDENTITY $ENV{CODESIGNIDENTITY})
-SET_XCODE_PROPERTY(RenderTestApp DEVELOPMENT_TEAM $ENV{IOS_DEVELOPMENT_TEAM})
-SET_XCODE_PROPERTY(RenderTestApp PROVISIONING_PROFILE_SPECIFIER $ENV{PROVISIONING_PROFILE_NAME})
-
-find_package(XCTest REQUIRED)
-
 xctest_add_bundle(RenderTestAppTests RenderTestApp ${MBGL_ROOT}/render-test/ios/tests/Tests.m)
 
 initialize_ios_target(RenderTestAppTests)
@@ -192,24 +182,38 @@ target_include_directories(
 
 xctest_add_test(XCTest.RenderTestApp RenderTestAppTests)
 
-set_target_properties(
-    RenderTestAppTests
-    PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST
-        ${MBGL_ROOT}/render-test/ios/tests/Info.plist
-        XCODE_ATTRIBUTE_USES_XCTRUNNER
-        "YES"
-        XCODE_ATTRIBUTE_TEST_TARGET_NAME
-        "RenderTestApp"
-        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
-        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
-        ""
-        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-        "NO"
-        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
-        ""
-)
-set_property(TARGET RenderTestAppTests PROPERTY XCODE_ATTRIBUTE_TEST_HOST)
-set_property(TARGET RenderTestAppTests PROPERTY XCODE_ATTRIBUTE_BUNDLE_LOADER)
+# set_target_properties(
+#     RenderTestAppTests
+#     PROPERTIES
+#         MACOSX_BUNDLE_INFO_PLIST
+#         ${MBGL_ROOT}/render-test/ios/tests/Info.plist
+#         # XCODE_ATTRIBUTE_USES_XCTRUNNER
+#         # "YES"
+#         # XCODE_ATTRIBUTE_TEST_TARGET_NAME
+#         # "RenderTestApp"
+#         # XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
+#         # XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
+#         # ""
+#         # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
+#         # "NO"
+#         # XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
+#         # ""
+# )
+
+macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
+    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
+endmacro (set_xcode_property)
+
+macro (unset_xcode_property TARGET XCODE_PROPERTY)
+  set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY})
+endmacro (unset_xcode_property)
+
+set_xcode_property(RenderTestAppTests ONLY_ACTIVE_ARCH "YES")
+set_xcode_property(RenderTestAppTests PRODUCT_BUNDLE_IDENTIFIER "com.mapbox.RenderTestAppTests")
+unset_xcode_property(RenderTestAppTests TEST_HOST)
+unset_xcode_property(RenderTestAppTests BUNDLE_LOADER)
+set_xcode_property(RenderTestAppTests USES_XCTRUNNER "YES")
+set_xcode_property(RenderTestAppTests TEST_TARGET_NAME "RenderTestApp")
+set_target_properties(RenderTestAppTests PROPERTIES XCODE_PRODUCT_TYPE "com.apple.product-type.bundle.unit-test")
 
 unset(IOS_DEPLOYMENT_TARGET CACHE)

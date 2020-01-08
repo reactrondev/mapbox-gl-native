@@ -9,14 +9,13 @@
 		<key>BundleIdentifiersForCrashReportEmphasis</key>
 		<array>
 			<string>com.mapbox.RenderTestApp</string>
-			<string>com.mapbox.RenderTestAppTests</string>
 		</array>
 		<key>CommandLineArguments</key>
 		<array/>
 		<key>DependentProductPaths</key>
 		<array>
-			<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app/PlugIns/RenderTestAppTests-Runner.app/PlugIns/RenderTestAppTests.xctest</string>
 			<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app</string>
+			<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app/PlugIns/RenderTestAppTests-Runner.app/PlugIns/RenderTestAppTests.xctest</string>
 		</array>
 		<key>EnvironmentVariables</key>
 		<dict>
@@ -36,7 +35,7 @@
 		<key>TestBundlePath</key>
 		<string>__TESTHOST__/PlugIns/RenderTestAppTests.xctest</string>
 		<key>TestHostBundleIdentifier</key>
-		<string>.xctrunner</string>
+		<string>com.mapbox.RenderTestAppTests.xctrunner</string>
 		<key>TestHostPath</key>
 		<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app/PlugIns/RenderTestAppTests-Runner.app</string>
 		<key>TestLanguage</key>
