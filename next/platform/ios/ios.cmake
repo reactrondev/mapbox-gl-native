@@ -4,15 +4,13 @@ target_compile_definitions(
 )
 
 if(NOT DEFINED IOS_DEPLOYMENT_TARGET)
-    set(IOS_DEPLOYMENT_TARGET "11.2")
+    set(IOS_DEPLOYMENT_TARGET "9.0")
 endif()
-
-set(CMAKE_OSX_ARCHITECTURES "arm64")
 
 macro(initialize_ios_target target)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
-    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
-    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
+    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
+    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH $<$<CONFIG:Debug>:YES>)
 endmacro()
 
@@ -58,8 +56,6 @@ target_sources(
         ${MBGL_ROOT}/platform/default/src/mbgl/util/png_writer.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/util/thread_local.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/util/utf.cpp
-        ${MBGL_ROOT}/platform/default/src/mbgl/util/thread_local.cpp
-        ${MBGL_ROOT}/platform/default/src/mbgl/layermanager/layer_manager.cpp
 )
 
 target_include_directories(
@@ -115,26 +111,13 @@ add_executable(
 
 initialize_ios_target(RenderTestApp)
 
-set(MACOSX_BUNDLE_INFO_STRING "com.mapbox.RenderTestApp")
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.mapbox.RenderTestApp")
-set(MACOSX_BUNDLE_BUNDLE_NAME "com.mapbox.RenderTestApp")
-set(MACOSX_BUNDLE_BUNDLE_VERSION "1.0")
-set(MACOSX_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET})
-
 set_target_properties(
     RenderTestApp
     PROPERTIES
         MACOSX_BUNDLE
         TRUE
-        # XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
-        # ""
-        # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-        # "NO"
-        # XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
-        # ""
         MACOSX_BUNDLE_INFO_PLIST
         ${MBGL_ROOT}/render-test/ios/Info.plist
-        # XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
         RESOURCE
         "${RESOURCES}"
 )
@@ -182,31 +165,18 @@ target_include_directories(
 
 xctest_add_test(XCTest.RenderTestApp RenderTestAppTests)
 
-# set_target_properties(
-#     RenderTestAppTests
-#     PROPERTIES
-#         MACOSX_BUNDLE_INFO_PLIST
-#         ${MBGL_ROOT}/render-test/ios/tests/Info.plist
-#         # XCODE_ATTRIBUTE_USES_XCTRUNNER
-#         # "YES"
-#         # XCODE_ATTRIBUTE_TEST_TARGET_NAME
-#         # "RenderTestApp"
-#         # XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "GJZR2MEM28"
-#         # XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY
-#         # ""
-#         # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED
-#         # "NO"
-#         # XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
-#         # ""
-# )
+macro(
+    set_xcode_property
+    TARGET
+    XCODE_PROPERTY
+    XCODE_VALUE
+)
+    set_property(TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
+endmacro(set_xcode_property)
 
-macro (set_xcode_property TARGET XCODE_PROPERTY XCODE_VALUE)
-    set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
-endmacro (set_xcode_property)
-
-macro (unset_xcode_property TARGET XCODE_PROPERTY)
-  set_property (TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY})
-endmacro (unset_xcode_property)
+macro(unset_xcode_property TARGET XCODE_PROPERTY)
+    set_property(TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY})
+endmacro(unset_xcode_property)
 
 set_xcode_property(RenderTestAppTests ONLY_ACTIVE_ARCH "YES")
 set_xcode_property(RenderTestAppTests PRODUCT_BUNDLE_IDENTIFIER "com.mapbox.RenderTestAppTests")
