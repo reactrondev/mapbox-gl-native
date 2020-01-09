@@ -214,6 +214,6 @@ unset_xcode_property(RenderTestAppTests TEST_HOST)
 unset_xcode_property(RenderTestAppTests BUNDLE_LOADER)
 set_xcode_property(RenderTestAppTests USES_XCTRUNNER "YES")
 set_xcode_property(RenderTestAppTests TEST_TARGET_NAME "RenderTestApp")
-set_target_properties(RenderTestAppTests PROPERTIES XCODE_PRODUCT_TYPE "com.apple.product-type.bundle.unit-test")
+set_target_properties(RenderTestAppTests PROPERTIES XCODE_PRODUCT_TYPE "com.apple.product-type.bundle.ui-testing")
 
 unset(IOS_DEPLOYMENT_TARGET CACHE)

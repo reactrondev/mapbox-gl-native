@@ -1,10 +1,17 @@
+//
+//  com_mapbox_RenderTestAppUITests.m
+//  com.mapbox.RenderTestAppUITests
+//
+//  Created by Miao Zhao on 1/9/20.
+//
+
 #import <XCTest/XCTest.h>
 
-@interface Tests : XCTestCase
+@interface com_mapbox_RenderTestAppUITests : XCTestCase
 
 @end
 
-@implementation Tests
+@implementation com_mapbox_RenderTestAppUITests
 
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -26,6 +33,15 @@
 
     // Use recording to get started writing UI tests.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
+}
+
+- (void)testLaunchPerformance {
+    if (@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)) {
+        // This measures how long it takes to launch your application.
+        [self measureWithMetrics:@[XCTOSSignpostMetric.applicationLaunchMetric] block:^{
+            [[[XCUIApplication alloc] init] launch];
+        }];
+    }
 }
 
 @end
