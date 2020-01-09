@@ -11,13 +11,13 @@
   <key>CFBundleIdentifier</key>
   <string>com.mapbox.RenderTestApp</string>
   <key>CFBundleGetInfoString</key>
-  <string>${MACOSX_BUNDLE_INFO_STRING}</string>
+  <string>com.mapbox.RenderTestApp</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>1.0</string>
   <key>CFBundleLongVersionString</key>
   <string>1.0</string>
   <key>CFBundleName</key>
-  <string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
+  <string>com.mapbox.RenderTestApp</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>

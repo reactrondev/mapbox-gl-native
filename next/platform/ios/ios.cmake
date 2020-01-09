@@ -9,7 +9,7 @@ endif()
 
 macro(initialize_ios_target target)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
-    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
+    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE $<$<CONFIG:Release>:YES)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH $<$<CONFIG:Debug>:YES>)
 endmacro()
@@ -56,6 +56,7 @@ target_sources(
         ${MBGL_ROOT}/platform/default/src/mbgl/util/png_writer.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/util/thread_local.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/util/utf.cpp
+        ${MBGL_ROOT}/platform/default/src/mbgl/layermanager/layer_manager.cpp
 )
 
 target_include_directories(
