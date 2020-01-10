@@ -11,8 +11,8 @@ set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 
 macro(initialize_ios_target target)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
-    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
-    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
+    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "YES") set_target_properties(${target} PROPERTIES
+    # XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH $<$<CONFIG:Debug>:YES>)
 endmacro()
 
@@ -176,11 +176,6 @@ target_include_directories(
 
 xctest_add_test(XCTest.RenderTestApp RenderTestAppTests)
 
-set_target_properties(
-    RenderTestAppTests
-    PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST
-        ${MBGL_ROOT}/render-test/ios/tests/Info.plist
-)
+set_target_properties(RenderTestAppTests PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${MBGL_ROOT}/render-test/ios/tests/Info.plist)
 
 unset(IOS_DEPLOYMENT_TARGET CACHE)
