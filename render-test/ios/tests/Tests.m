@@ -23,6 +23,14 @@
     // UI tests must launch the application that they test.
     XCUIApplication *app = [[XCUIApplication alloc] init];
     [app launch];
+    XCUIScreenshot *testScreen = [app.windows.firstMatch screenshot];
+    XCTAssert(testScreen);
+//    let screenshot = app.windows.firstMatch.screenshot()
+    
+    XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:testScreen];
+    XCTAssert(attachment);
+    attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
+    [self addAttachment:attachment];    
 
     // Use recording to get started writing UI tests.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
