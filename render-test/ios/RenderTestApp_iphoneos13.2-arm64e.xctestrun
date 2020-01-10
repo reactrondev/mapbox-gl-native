@@ -9,13 +9,14 @@
 		<key>BundleIdentifiersForCrashReportEmphasis</key>
 		<array>
 			<string>com.mapbox.RenderTestApp</string>
+			<string>com.mapbox.RenderTestAppTests</string>
 		</array>
 		<key>CommandLineArguments</key>
 		<array/>
 		<key>DependentProductPaths</key>
 		<array>
 			<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app</string>
-			<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app/PlugIns/RenderTestAppTests-Runner.app/PlugIns/RenderTestAppTests.xctest</string>
+			<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app/PlugIns/RenderTestAppTests.xctest</string>
 		</array>
 		<key>EnvironmentVariables</key>
 		<dict>
@@ -24,9 +25,7 @@
 			<key>SQLITE_ENABLE_THREAD_ASSERTIONS</key>
 			<string>1</string>
 		</dict>
-		<key>IsUITestBundle</key>
-		<true/>
-		<key>IsXCTRunnerHostedTestBundle</key>
+		<key>IsAppHostedTestBundle</key>
 		<true/>
 		<key>ProductModuleName</key>
 		<string>RenderTestAppTests</string>
@@ -37,9 +36,9 @@
 		<key>TestBundlePath</key>
 		<string>__TESTHOST__/PlugIns/RenderTestAppTests.xctest</string>
 		<key>TestHostBundleIdentifier</key>
-		<string>com.mapbox.RenderTestAppTests.xctrunner</string>
+		<string>com.mapbox.RenderTestApp</string>
 		<key>TestHostPath</key>
-		<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app/PlugIns/RenderTestAppTests-Runner.app</string>
+		<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app</string>
 		<key>TestLanguage</key>
 		<string></string>
 		<key>TestRegion</key>
@@ -48,15 +47,15 @@
 		<dict>
 			<key>DYLD_FALLBACK_FRAMEWORK_PATH</key>
 			<string></string>
+			<key>DYLD_INSERT_LIBRARIES</key>
+			<string>__PLATFORMS__/iPhoneOS.platform/Developer/usr/lib/libXCTestBundleInject.dylib</string>
+			<key>XCInjectBundleInto</key>
+			<string>unused</string>
 		</dict>
 		<key>ToolchainsSettingValue</key>
 		<array/>
 		<key>UITargetAppCommandLineArguments</key>
 		<array/>
-		<key>UITargetAppEnvironmentVariables</key>
-		<dict/>
-		<key>UITargetAppPath</key>
-		<string>__TESTROOT__/Debug-iphoneos/RenderTestApp.app</string>
 		<key>UserAttachmentLifetime</key>
 		<string>deleteOnSuccess</string>
 	</dict>

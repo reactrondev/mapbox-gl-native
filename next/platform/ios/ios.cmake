@@ -7,10 +7,12 @@ if(NOT DEFINED IOS_DEPLOYMENT_TARGET)
     set(IOS_DEPLOYMENT_TARGET "9.0")
 endif()
 
+set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+
 macro(initialize_ios_target target)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
-    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE $<$<CONFIG:Release>:YES)
-    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
+    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
+    # set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE bitcode)
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH $<$<CONFIG:Debug>:YES>)
 endmacro()
 
@@ -56,6 +58,7 @@ target_sources(
         ${MBGL_ROOT}/platform/default/src/mbgl/util/png_writer.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/util/thread_local.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/util/utf.cpp
+        ${MBGL_ROOT}/platform/default/src/mbgl/util/thread_local.cpp
         ${MBGL_ROOT}/platform/default/src/mbgl/layermanager/layer_manager.cpp
 )
 
@@ -92,9 +95,9 @@ target_link_libraries(
 )
 
 enable_testing()
-find_package(XCTest REQUIRED)
-
 set(RESOURCES ${MBGL_ROOT}/render-test/ios/Main.storyboard ${MBGL_ROOT}/render-test/ios/LaunchScreen.storyboard ${MBGL_ROOT}/test-data)
+
+set(PUBLIC_HEADER ${MBGL_ROOT}/render-test/ios/iosTestRunner.h)
 
 add_executable(
     RenderTestApp
@@ -112,11 +115,28 @@ add_executable(
 
 initialize_ios_target(RenderTestApp)
 
+set(DEPLOYMENT_TARGET 8.0)
+set(MACOSX_BUNDLE_INFO_STRING "com.mapbox.RenderTestApp")
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.mapbox.RenderTestApp")
+set(MACOSX_BUNDLE_BUNDLE_NAME "com.mapbox.RenderTestApp")
+set(MACOSX_BUNDLE_ICON_FILE "")
+set(MACOSX_BUNDLE_LONG_VERSION_STRING "1.0")
+set(MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0")
+set(MACOSX_BUNDLE_BUNDLE_VERSION "1.0")
+set(MACOSX_BUNDLE_COPYRIGHT "Copyright YOU")
+set(MACOSX_DEPLOYMENT_TARGET ${DEPLOYMENT_TARGET})
+# set(CODE_SIGN_IDENTITY "iPhone Developer") set(DEVELOPMENT_TEAM_ID "GJZR2MEM28")
+
+# Turn on ARC
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+
 set_target_properties(
     RenderTestApp
     PROPERTIES
         MACOSX_BUNDLE
         TRUE
+        MACOSX_BUNDLE_IDENTIFIER
+        com.mapbox.RenderTestAPP
         MACOSX_BUNDLE_INFO_PLIST
         ${MBGL_ROOT}/render-test/ios/Info.plist
         RESOURCE
@@ -155,6 +175,8 @@ target_link_libraries(
         mbgl-render-test
 )
 
+find_package(XCTest REQUIRED)
+
 xctest_add_bundle(RenderTestAppTests RenderTestApp ${MBGL_ROOT}/render-test/ios/tests/Tests.m)
 
 initialize_ios_target(RenderTestAppTests)
@@ -166,25 +188,11 @@ target_include_directories(
 
 xctest_add_test(XCTest.RenderTestApp RenderTestAppTests)
 
-macro(
-    set_xcode_property
-    TARGET
-    XCODE_PROPERTY
-    XCODE_VALUE
+set_target_properties(
+    RenderTestAppTests
+    PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST
+        ${MBGL_ROOT}/render-test/ios/tests/Info.plist
 )
-    set_property(TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
-endmacro(set_xcode_property)
-
-macro(unset_xcode_property TARGET XCODE_PROPERTY)
-    set_property(TARGET ${TARGET} PROPERTY XCODE_ATTRIBUTE_${XCODE_PROPERTY})
-endmacro(unset_xcode_property)
-
-set_xcode_property(RenderTestAppTests ONLY_ACTIVE_ARCH "YES")
-set_xcode_property(RenderTestAppTests PRODUCT_BUNDLE_IDENTIFIER "com.mapbox.RenderTestAppTests")
-unset_xcode_property(RenderTestAppTests TEST_HOST)
-unset_xcode_property(RenderTestAppTests BUNDLE_LOADER)
-set_xcode_property(RenderTestAppTests USES_XCTRUNNER "YES")
-set_xcode_property(RenderTestAppTests TEST_TARGET_NAME "RenderTestApp")
-set_target_properties(RenderTestAppTests PROPERTIES XCODE_PRODUCT_TYPE "com.apple.product-type.bundle.ui-testing")
 
 unset(IOS_DEPLOYMENT_TARGET CACHE)
