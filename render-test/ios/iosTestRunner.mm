@@ -5,9 +5,11 @@
 #include <string>
 
 @interface IosTestRunner ()
-{
-    TestRunner* runner;
-}
+
+@property (nullable) TestRunner* runner;
+
+@property (copy, nullable) NSString *resultPath;
+
 @end
 
 @implementation IosTestRunner
@@ -16,7 +18,7 @@
 {
     self = [super init];
     if (self) {
-        runner = new TestRunner();
+        self.runner = new TestRunner();
         NSString *path = nil;
         NSError *error;
         NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -69,13 +71,24 @@
             
             std::string manifest = std::string([manifestPath UTF8String]);
             
-            runner->startTest(manifest);
+            self.runner->startTest(manifest);
+            
+            self.resultPath =  [path stringByAppendingPathComponent:@"/next-ios-render-test-runner-style.html"];
+            
+            BOOL success = [fileManager fileExistsAtPath: self.resultPath];
+            if (!success) {
+                NSLog(@"File doese not exit %@", self.resultPath);
+            }
         }
 
-        delete runner;
-        runner = nullptr;
+        delete self.runner;
+        self.runner = nullptr;
     }
     return self;
 }
 
+- (NSString*) getResultPath {
+ 
+   return self.resultPath;
+}
 @end

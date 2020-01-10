@@ -710,7 +710,7 @@ jobs:
               gcloud firebase test ios run \
                 --test testapp.zip \
                 --device model=iphonexs,version=12.1,locale=en,orientation=portrait --xcode-version=11.1 --timeout 20m \
-                --verbosity=debug
+                --verbosity=debug --results-dir ios-render-test-app-${CIRCLE_BUILD_NUM}
             fi
       - next-save
   next-android-render-test-runner:

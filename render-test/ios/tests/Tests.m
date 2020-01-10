@@ -28,6 +28,20 @@
     XCTAssert(attachment);
     attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
     [self addAttachment:attachment];
+    
+    NSString* result = [runner getResultPath];
+    XCTAssert(result);
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL success = [fileManager fileExistsAtPath: result];
+    if (!success) {
+       NSLog(@"File doese not exit %@", result);
+    }
+    NSURL *url = [NSURL fileURLWithPath:result];
+    
+    XCTAttachment *attachmentURL = [XCTAttachment attachmentWithContentsOfFileAtURL: url];
+    XCTAssert(attachmentURL);
+    attachmentURL.lifetime = XCTAttachmentLifetimeKeepAlways;
+    [self addAttachment:attachmentURL];
 
     // Use recording to get started writing UI tests.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
