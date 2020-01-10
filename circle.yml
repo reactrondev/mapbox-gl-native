@@ -177,7 +177,6 @@ workflows:
   #     - ios-sanitize-address-nightly
   #     - ios-static-analyzer-nightly
   #     - ios-static-analyzer-nightly-xcode10
->>>>>>> try to build with fastlane
 
 executors:
   ubuntu-disco:
