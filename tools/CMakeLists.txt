@@ -1,0 +1,6 @@
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cache)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/expression-test)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/map-shell)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/offline)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/render-test)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/static)

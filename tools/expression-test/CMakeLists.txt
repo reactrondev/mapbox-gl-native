@@ -1,14 +1,14 @@
 add_executable(
     mbgl-expression-test
-    ${MBGL_ROOT}/expression-test/expression_test_logger.cpp
-    ${MBGL_ROOT}/expression-test/expression_test_logger.hpp
-    ${MBGL_ROOT}/expression-test/expression_test_parser.cpp
-    ${MBGL_ROOT}/expression-test/expression_test_parser.hpp
-    ${MBGL_ROOT}/expression-test/expression_test_runner.cpp
-    ${MBGL_ROOT}/expression-test/expression_test_runner.hpp
-    ${MBGL_ROOT}/expression-test/test_runner_common.cpp
-    ${MBGL_ROOT}/expression-test/test_runner_common.hpp
-    ${MBGL_ROOT}/expression-test/main.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/expression_test_logger.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/expression_test_logger.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/expression_test_parser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/expression_test_parser.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/expression_test_runner.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/expression_test_runner.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/test_runner_common.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/test_runner_common.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/main.cpp
 )
 
 target_compile_definitions(

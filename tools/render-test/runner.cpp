@@ -17,7 +17,7 @@
 
 #include <mapbox/pixelmatch.hpp>
 
-#include <../expression-test/test_runner_common.hpp>
+#include "../expression-test/test_runner_common.hpp"
 #include "allocation_index.hpp"
 #include "file_source.hpp"
 #include "metadata.hpp"
