@@ -230,6 +230,7 @@ commands:
           command: |
             brew install cmake ccache glfw ninja pkgconfig qt
             brew cask install google-cloud-sdk
+            brew install chargepoint/xcparse/xcparse
       - run:
           name: Code Generators macOS
           command: |
@@ -671,7 +672,7 @@ jobs:
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $FASTLANE_PASSWORD fastlane_keychain
             /usr/bin/env xcrun security find-identity -v -p codesigning
       - run:
-          name: Build 
+          name: Build IOS RenderTestApp
           command: |
             cd render-test/ios && ./setup_test_data.sh
             cmake ../../next -B Build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
@@ -696,7 +697,7 @@ jobs:
               rm iosAccount.json
             fi
       - run:
-          name: Run instrumentation tests on Firebase
+          name: Run tests on Firebase
           no_output_timeout: 20m
           command: |
             if [[ -n "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" ]]; then
@@ -710,7 +711,20 @@ jobs:
               gcloud firebase test ios run \
                 --test testapp.zip \
                 --device model=iphonexs,version=12.1,locale=en,orientation=portrait --xcode-version=11.1 --timeout 20m \
-                --verbosity=debug --results-dir ios-render-test-app-${CIRCLE_BUILD_NUM}
+                --verbosity=debug --no-record-video --results-dir ios-render-test-app-${CIRCLE_BUILD_NUM}
+            fi
+      - run:
+          name: Retrieve TestResult from gcloud
+          when: always
+          command: |
+            if [[ -n "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" ]]; then
+              testResult=$(gsutil ls -d gs://test-lab-hn7kwqcz3108z-hjm4qtbqqkymk/ios-render-test-app-393493/iphonexs-12.1-en-portrait/TestLogs/)
+              mkdir -p render-test-app
+              gsutil -m cp -r $testResult render-test-app
+              cd render-test-app/TestLogs && ls
+              xcparse attachments *.xcresult
+              cd ../.. && mkdir -p tmp/tests/ios-render-test
+              cp render-test-app/TestLogs/*.html tmp/tests/ios-render-test
             fi
       - next-save
   next-android-render-test-runner:
