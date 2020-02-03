@@ -316,6 +316,9 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             }
         }
     }];
+
+    //Add this line to the end of the method
+     self.mapView.styleURL = [NSURL URLWithString: @"https://testbucket.steerpath.com/default.json"];
 }
 
 - (void)saveState:(__unused NSNotification *)notification
@@ -2211,6 +2214,25 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     // that a device with an English-language locale is already effectively
     // using locale-based country labels.
     _localizingLabels = [[self bestLanguageForUser] isEqualToString:@"en"];
+
+    //Add the following code into the end of the method
+    NSString* tileSourceName = @"testTileSource";
+    NSArray* tileTemplates = @[@"https://testbucket.steerpath.com/vector-tiles/{z}/{x}/{y}"];
+    NSDictionary* options = @{ MGLTileSourceOptionMinimumZoomLevel: @12, MGLTileSourceOptionMaximumZoomLevel: @19 };
+    MGLVectorTileSource* testSource = [[MGLVectorTileSource alloc] initWithIdentifier: tileSourceName tileURLTemplates:tileTemplates options:options];
+
+    for (MGLStyleLayer* layer in style.layers) {
+        if ([layer isKindOfClass:[MGLVectorStyleLayer class]]) {
+            if ([layer isKindOfClass: [MGLFillStyleLayer class]]) {
+                MGLFillStyleLayer* oldLayer = (MGLFillStyleLayer*)layer;
+                MGLFillStyleLayer* newLayer = [[MGLFillStyleLayer alloc] initWithIdentifier: @"test layer id" source: testSource];
+                newLayer.sourceLayerIdentifier = tileSourceName;
+
+                NSExpression* newFillColor = oldLayer.fillColor.copy;
+                newLayer.fillColor = newFillColor;   //Exception thrown here
+            }
+        }
+    }
 }
 
 - (BOOL)mapView:(MGLMapView *)mapView shouldChangeFromCamera:(MGLMapCamera *)oldCamera toCamera:(MGLMapCamera *)newCamera {
