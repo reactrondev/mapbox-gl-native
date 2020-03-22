@@ -77,11 +77,13 @@ void Transform::jumpTo(const CameraOptions& camera) {
 }
 
 /**
- * Change any combination of center, zoom, bearing, and pitch, with a smooth animation
- * between old and new values. The map will retain the current values for any options
- * not included in `options`.
+ * Change any combination of center, zoom, bearing, pitch and edgeInsets, with a
+ * smooth animation between old and new values. The map will retain the current
+ * values for any options not included in `options`.
  */
 void Transform::easeTo(const CameraOptions& camera, const AnimationOptions& animation) {
+    const EdgeInsets& padding = camera.padding.value_or(state.edgeInsets);
+    LatLng startLatLng = getLatLng(LatLng::Unwrapped);
     const LatLng unwrappedLatLng = camera.center.value_or(getLatLng());
     const LatLng latLng = unwrappedLatLng.wrapped();
     double zoom = camera.zoom.value_or(getZoom());
@@ -92,9 +94,6 @@ void Transform::easeTo(const CameraOptions& camera, const AnimationOptions& anim
         return;
     }
 
-    // Determine endpoints.
-    EdgeInsets padding = camera.padding;
-    LatLng startLatLng = getLatLng(padding);
     // If gesture in progress, we transfer the world rounds from the end
     // longitude into start, so we can guarantee the "scroll effect" of rounding
     // the world while assuring the end longitude remains wrapped.
@@ -106,9 +105,6 @@ void Transform::easeTo(const CameraOptions& camera, const AnimationOptions& anim
 
     const Point<double> startPoint = Projection::project(startLatLng, state.scale);
     const Point<double> endPoint = Projection::project(latLng, state.scale);
-
-    ScreenCoordinate center = getScreenCoordinate(padding);
-    center.y = state.size.height - center.y;
 
     // Constrain camera options.
     zoom = util::clamp(zoom, state.getMinZoom(), state.getMaxZoom());
@@ -127,6 +123,8 @@ void Transform::easeTo(const CameraOptions& camera, const AnimationOptions& anim
     state.panning = latLng != startLatLng;
     state.scaling = scale != startScale;
     state.rotating = angle != startAngle;
+    
+    const EdgeInsets startEdgeInsets = state.edgeInsets;
 
     startTransition(camera, animation, [=](double t) {
         Point<double> framePoint = util::interpolate(startPoint, endPoint, t);
@@ -141,8 +139,14 @@ void Transform::easeTo(const CameraOptions& camera, const AnimationOptions& anim
             state.pitch = util::interpolate(startPitch, pitch, t);
         }
 
-        if (!padding.isFlush()) {
-            state.moveLatLng(frameLatLng, center);
+        if (padding != startEdgeInsets) {
+            // Interpolate edge insets
+            state.edgeInsets = {
+                util::interpolate(startEdgeInsets.top(), padding.top(), t),
+                util::interpolate(startEdgeInsets.left(), padding.left(), t),
+                util::interpolate(startEdgeInsets.bottom(), padding.bottom(), t),
+                util::interpolate(startEdgeInsets.right(), padding.right(), t)
+            };
         }
     }, duration);
 }
@@ -156,7 +160,8 @@ void Transform::easeTo(const CameraOptions& camera, const AnimationOptions& anim
     Where applicable, local variable documentation begins with the associated
     variable or function in van Wijk (2003). */
 void Transform::flyTo(const CameraOptions &camera, const AnimationOptions &animation) {
-    const LatLng latLng = camera.center.value_or(getLatLng()).wrapped();
+    const EdgeInsets& padding = camera.padding.value_or(state.edgeInsets);
+    const LatLng& latLng = camera.center.value_or(getLatLng(LatLng::Unwrapped)).wrapped();
     double zoom = camera.zoom.value_or(getZoom());
     double angle = camera.angle ? -*camera.angle * util::DEG2RAD : getAngle();
     double pitch = camera.pitch ? *camera.pitch * util::DEG2RAD : getPitch();
@@ -166,15 +171,11 @@ void Transform::flyTo(const CameraOptions &camera, const AnimationOptions &anima
     }
 
     // Determine endpoints.
-    EdgeInsets padding = camera.padding;
-    LatLng startLatLng = getLatLng(padding).wrapped();
+    LatLng startLatLng = getLatLng(LatLng::Unwrapped).wrapped();
     startLatLng.unwrapForShortestPath(latLng);
 
     const Point<double> startPoint = Projection::project(startLatLng, state.scale);
     const Point<double> endPoint = Projection::project(latLng, state.scale);
-
-    ScreenCoordinate center = getScreenCoordinate(padding);
-    center.y = state.size.height - center.y;
 
     // Constrain camera options.
     zoom = util::clamp(zoom, state.getMinZoom(), state.getMaxZoom());
@@ -275,6 +276,7 @@ void Transform::flyTo(const CameraOptions &camera, const AnimationOptions &anima
     state.panning = true;
     state.scaling = true;
     state.rotating = angle != startAngle;
+    const EdgeInsets startEdgeInsets = state.edgeInsets;
 
     startTransition(camera, animation, [=](double k) {
         /// s: The distance traveled along the flight path, measured in
@@ -302,8 +304,14 @@ void Transform::flyTo(const CameraOptions &camera, const AnimationOptions &anima
             state.pitch = util::interpolate(startPitch, pitch, k);
         }
 
-        if (!padding.isFlush()) {
-            state.moveLatLng(frameLatLng, center);
+        if (padding != startEdgeInsets) {
+            // Interpolate edge insets
+            state.edgeInsets = {
+                util::interpolate(startEdgeInsets.top(), padding.top(), us),
+                util::interpolate(startEdgeInsets.left(), padding.left(), us),
+                util::interpolate(startEdgeInsets.bottom(), padding.bottom(), us),
+                util::interpolate(startEdgeInsets.right(), padding.right(), us)
+            };
         }
     }, duration);
 }
@@ -311,25 +319,14 @@ void Transform::flyTo(const CameraOptions &camera, const AnimationOptions &anima
 #pragma mark - Position
 
 void Transform::moveBy(const ScreenCoordinate& offset, const AnimationOptions& animation) {
-    ScreenCoordinate centerOffset = { offset.x, -offset.y, };
-    ScreenCoordinate centerPoint = getScreenCoordinate() - centerOffset;
-    easeTo(CameraOptions().withCenter(state.screenCoordinateToLatLng(centerPoint)), animation);
+    ScreenCoordinate centerOffset = { offset.x, offset.y };
+    ScreenCoordinate pointOnScreen = state.edgeInsets.getCenter(state.size.width, state.size.height) - centerOffset;
+    // Use unwrapped LatLng to carry information about moveBy direction.
+    easeTo(CameraOptions().withCenter(screenCoordinateToLatLng(pointOnScreen, LatLng::Unwrapped)), animation);
 }
 
-LatLng Transform::getLatLng(const EdgeInsets& padding) const {
-    if (padding.isFlush()) {
-        return state.getLatLng();
-    } else {
-        return screenCoordinateToLatLng(padding.getCenter(state.size.width, state.size.height));
-    }
-}
-
-ScreenCoordinate Transform::getScreenCoordinate(const EdgeInsets& padding) const {
-    if (padding.isFlush()) {
-        return { state.size.width / 2., state.size.height / 2. };
-    } else {
-        return padding.getCenter(state.size.width, state.size.height);
-    }
+LatLng Transform::getLatLng(LatLng::WrapMode wrap) const {
+    return state.getLatLng(wrap);
 }
 
 
@@ -371,7 +368,7 @@ void Transform::setMaxPitch(double maxPitch) {
 #pragma mark - Angle
 
 void Transform::rotateBy(const ScreenCoordinate& first, const ScreenCoordinate& second,  const AnimationOptions& animation) {
-    ScreenCoordinate center = getScreenCoordinate();
+    ScreenCoordinate center = state.edgeInsets.getCenter(state.size.width, state.size.height);
     const ScreenCoordinate offset = first - center;
     const double distance = std::sqrt(std::pow(2, offset.x) + std::pow(2, offset.y));
 
@@ -594,10 +591,10 @@ ScreenCoordinate Transform::latLngToScreenCoordinate(const LatLng& latLng) const
     return point;
 }
 
-LatLng Transform::screenCoordinateToLatLng(const ScreenCoordinate& point) const {
+LatLng Transform::screenCoordinateToLatLng(const ScreenCoordinate& point, LatLng::WrapMode wrapMode) const {
     ScreenCoordinate flippedPoint = point;
     flippedPoint.y = state.size.height - flippedPoint.y;
-    return state.screenCoordinateToLatLng(flippedPoint).wrapped();
+    return state.screenCoordinateToLatLng(flippedPoint, wrapMode);
 }
 
 } // namespace mbgl

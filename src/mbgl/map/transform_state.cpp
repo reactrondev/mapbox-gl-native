@@ -32,24 +32,36 @@ void TransformState::getProjMatrix(mat4& projMatrix, uint16_t nearZ, bool aligne
         return;
     }
 
-     // Find the distance from the center point [width/2, height/2] to the
-    // center top point [width/2, 0] in Z units, using the law of sines.
+    const double cameraToCenterDistance = getCameraToCenterDistance();
+    auto offset = getCenterOffset();
+    
+    // Find the distance from the viewport center point
+    // [width/2 + offset.x, height/2 + offset.y] to the top edge, to point
+    // [width/2 + offset.x, 0] in Z units, using the law of sines.
     // 1 Z unit is equivalent to 1 horizontal px at the center of the map
     // (the distance between[width/2, height/2] and [width/2 + 1, height/2])
-    const double halfFov = getFieldOfView() / 2.0;
+    const double fovAboveCenter = getFieldOfView() * (0.5 + offset.y / size.height);
     const double groundAngle = M_PI / 2.0 + getPitch();
-    const double topHalfSurfaceDistance = std::sin(halfFov) * getCameraToCenterDistance() / std::sin(M_PI - groundAngle - halfFov);
+    const double aboveCenterSurfaceDistance = std::sin(fovAboveCenter) * cameraToCenterDistance / std::sin(M_PI - groundAngle - fovAboveCenter);
 
 
     // Calculate z distance of the farthest fragment that should be rendered.
-    const double furthestDistance = std::cos(M_PI / 2 - getPitch()) * topHalfSurfaceDistance + getCameraToCenterDistance();
+    const double furthestDistance = std::cos(M_PI / 2 - getPitch()) * aboveCenterSurfaceDistance + cameraToCenterDistance;
     // Add a bit extra to avoid precision problems when a fragment's distance is exactly `furthestDistance`
     const double farZ = furthestDistance * 1.01;
 
     matrix::perspective(projMatrix, getFieldOfView(), double(size.width) / size.height, nearZ, farZ);
 
+    // Move the center of perspective to center of specified edgeInsets.
+    // Values are in range [-1, 1] where the upper and lower range values
+    // position viewport center to the screen edges. This is overriden
+    // if using axonometric perspective (not in public API yet, Issue #11882).
+    // TODO(astojilj): Issue #11882 should take edge insets into account, too.
+    projMatrix[8] = -offset.x * 2.0 / size.width;
+    projMatrix[9] = offset.y * 2.0 / size.height;
+    
     const bool flippedY = viewportMode == ViewportMode::FlippedY;
-    matrix::scale(projMatrix, projMatrix, 1, flippedY ? 1 : -1, 1);
+    matrix::scale(projMatrix, projMatrix, 1.0, flippedY ? 1 : -1, 1);
 
     matrix::translate(projMatrix, projMatrix, 0, 0, -getCameraToCenterDistance());
 
@@ -142,11 +154,19 @@ CameraOptions TransformState::getCameraOptions(const EdgeInsets& padding) const 
         center = screenCoordinateToLatLng(point).wrapped();
     }
     return CameraOptions()
-        .withCenter(center)
+        .withCenter(getLatLng())
         .withPadding(padding)
         .withZoom(getZoom())
         .withAngle(-angle * util::RAD2DEG)
         .withPitch(pitch * util::RAD2DEG);
+}
+
+#pragma mark - EdgeInsets
+
+void TransformState::setEdgeInsets(const EdgeInsets& val) {
+    if (edgeInsets != val) {
+        edgeInsets = val;        
+    }
 }
 
 #pragma mark - Position
@@ -221,6 +241,10 @@ double TransformState::getMaxZoom() const {
     return scaleZoom(max_scale);
 }
 
+ScreenCoordinate TransformState::getCenterOffset() const {
+    return { 0.5 * (edgeInsets.left() - edgeInsets.right()), 0.5 * (edgeInsets.top() - edgeInsets.bottom()) };
+}
+    
 void TransformState::setMinPitch(double minPitch) {
     if (minPitch <= getMaxPitch()) {
         min_pitch = minPitch;
@@ -297,7 +321,7 @@ ScreenCoordinate TransformState::latLngToScreenCoordinate(const LatLng& latLng) 
         return {};
     }
 
-    mat4 mat = coordinatePointMatrix(getZoom());
+    mat4 mat = coordinatePointMatrix();
     vec4 p;
     Point<double> pt = Projection::project(latLng, scale) / util::tileSize;
     vec4 c = {{ pt.x, pt.y, 0, 1 }};
@@ -311,7 +335,7 @@ LatLng TransformState::screenCoordinateToLatLng(const ScreenCoordinate& point, L
     }
 
     float targetZ = 0;
-    mat4 mat = coordinatePointMatrix(getZoom());
+    mat4 mat = coordinatePointMatrix();
 
     mat4 inverted;
     bool err = matrix::invert(inverted, mat);
@@ -344,11 +368,10 @@ LatLng TransformState::screenCoordinateToLatLng(const ScreenCoordinate& point, L
     return Projection::unproject(util::interpolate(p0, p1, t), scale / util::tileSize, wrapMode);
 }
 
-mat4 TransformState::coordinatePointMatrix(double z) const {
+mat4 TransformState::coordinatePointMatrix() const {
     mat4 proj;
     getProjMatrix(proj);
-    float s = Projection::worldSize(scale) / std::pow(2, z);
-    matrix::scale(proj, proj, s, s, 1);
+    matrix::scale(proj, proj, util::tileSize, util::tileSize, 1);
     matrix::multiply(proj, getPixelMatrix(), proj);
     return proj;
 }
@@ -447,7 +470,7 @@ float TransformState::maxPitchScaleFactor() const {
         return {};
     }
     auto latLng = screenCoordinateToLatLng({ 0, static_cast<float>(getSize().height) });
-    mat4 mat = coordinatePointMatrix(getZoom());
+    mat4 mat = coordinatePointMatrix();
     Point<double> pt = Projection::project(latLng, scale) / util::tileSize;
     vec4 p = {{ pt.x, pt.y, 0, 1 }};
     vec4 topPoint;
