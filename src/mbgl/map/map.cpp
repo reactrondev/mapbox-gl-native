@@ -316,7 +316,7 @@ void Map::setLatLng(const LatLng& latLng, const EdgeInsets& padding, const Anima
 }
 
 LatLng Map::getLatLng(const EdgeInsets& padding) const {
-    return impl->transform.getLatLng(padding);
+    return *impl->transform.getCameraOptions(padding).center;
 }
 
 void Map::resetPosition(const EdgeInsets& padding) {

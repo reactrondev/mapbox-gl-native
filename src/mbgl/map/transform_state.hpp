@@ -43,7 +43,11 @@ public:
     ViewportMode getViewportMode() const;
 
     CameraOptions getCameraOptions(const EdgeInsets&) const;
-
+    
+    // EdgeInsects
+    EdgeInsets getEdgeInsets() const { return edgeInsets; }
+    void setEdgeInsets(const EdgeInsets&);
+    
     // Position
     LatLng getLatLng(LatLng::WrapMode = LatLng::Unwrapped) const;
     double pixel_x() const;
@@ -66,6 +70,10 @@ public:
     void setMaxPitch(double);
     double getMaxPitch() const;
 
+    // Viewport center offset, from [size.width / 2, size.height / 2], defined
+    // by |edgeInsets| in screen coordinates, with top left origin.
+    ScreenCoordinate getCenterOffset() const;
+    
     // Rotation
     float getAngle() const;
     float getFieldOfView() const;
@@ -110,7 +118,7 @@ private:
     // logical dimensions
     Size size;
 
-    mat4 coordinatePointMatrix(double z) const;
+    mat4 coordinatePointMatrix() const;
     mat4 getPixelMatrix() const;
 
     /** Recenter the map so that the given coordinate is located at the given
@@ -142,6 +150,8 @@ private:
     double xSkew = 0.0;
     double ySkew = 1.0;
     bool axonometric = false;
+    
+    EdgeInsets edgeInsets;
 
     // cache values for spherical mercator math
     double Bc = Projection::worldSize(scale) / util::DEGREES_MAX;
